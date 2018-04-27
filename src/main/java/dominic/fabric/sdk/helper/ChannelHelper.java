@@ -70,20 +70,16 @@ public class ChannelHelper {
         return newChannel;
     }
 
-    public static Channel resumeChannel(NetworkConfig networkConfig, HFClient client, String channelName) {
+    public static Channel resumeChannel(NetworkConfig networkConfig, HFClient client, String channelName) throws Exception {
         Preconditions.checkNotNull(networkConfig);
         Preconditions.checkNotNull(client);
         Preconditions.checkNotNull(channelName);
 
-        try {
-            Channel channel = client.loadChannelFromConfig(channelName, networkConfig);
-            if (channel == null) {
-                throw new RuntimeException("Channel " + channelName + " is not defined in the config file!");
-            }
-            channel.initialize();
-            return channel;
-        } catch (Exception e) {
-            throw new RuntimeException(String.format("resumeChannel %s fail:", channelName), e);
+        Channel channel = client.loadChannelFromConfig(channelName, networkConfig);
+        if (channel == null) {
+            throw new Exception("Channel " + channelName + " is not defined in the config file!");
         }
+        channel.initialize();
+        return channel;
     }
 }
