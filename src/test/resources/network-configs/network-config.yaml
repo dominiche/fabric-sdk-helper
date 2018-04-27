@@ -1,0 +1,232 @@
+---
+#
+# Copyright Fujitsu Australia Software Technology, IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+#
+# The network connection profile provides client applications the information about the target
+# blockchain network that are necessary for the applications to interact with it. These are all
+# knowledge that must be acquired from out-of-band sources. This file provides such a source.
+#
+name: "Network-Config-Test"
+x-type: "hlfv1"
+description: "The network used in the integration tests"
+version: 1.0.0
+
+
+client:
+  organization: Org1
+  credentialStore:
+    path: "/tmp/hfc-kvs"
+    cryptoStore:
+      path: "/tmp/hfc-cvs"
+    wallet: wallet-name
+
+
+channels:
+  foo:
+    orderers:
+      - orderer.example.com
+
+    peers:
+      peer0.org1.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+      peer1.org1.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: false
+
+    chaincodes:
+      - example02:v1
+      - marbles:1.0
+
+  bar:
+    orderers:
+      - orderer.example.com
+
+    peers:
+      peer0.org2.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+      peer1.org2.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: false
+
+    chaincodes:
+      - example02:v1
+      - marbles:1.0
+
+
+organizations:
+  Org1:
+    mspid: Org1MSP
+    peers:
+      - peer0.org1.example.com
+      - peer1.org1.example.com
+
+    certificateAuthorities:
+      - ca-org1
+
+    adminPrivateKey:
+      path: src/test/resources/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/581fa072e48dc2a516f664df94ea687447c071f89fc0b783b147956a08929dcc_sk
+#      pem: |
+#            -----BEGIN PRIVATE KEY-----
+#            MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgpANnM2zJ/oz7c31B
+#            ahODy1OSvibxUHpQ/1xiUleYvH+hRANCAAS1d3Y0ZtaqIrifI92pNvkFlgD2rSan
+#            O/YCrqMzkJFp1OyZZEORkrNuho+iUFNKRngXvVOYEzRAC7HfWmiMyar/
+#            -----END PRIVATE KEY-----
+
+    signedCert:
+      path: src/test/resources/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+
+
+  Org2:
+    mspid: Org2MSP
+    peers:
+      - peer0.org2.example.com
+      - peer1.org2.example.com
+    certificateAuthorities:
+          - ca-org2
+
+
+orderers:
+  orderer.example.com:
+    url: grpc://localhost:7050
+    grpcOptions:
+#      ssl-target-name-override: orderer.example.com
+#      sslProvider: openSSL
+#      negotiationType: TLS
+#      hostnameOverride: orderer.example.com
+      grpc-max-send-message-length: 15
+
+    # src/test/fixture/sdkintegration/e2e-2Orgs/v1.1/crypto-config/ordererOrganizations/example.com/tlsca
+#    tlsCACerts:
+#      pem: |
+#        -----BEGIN CERTIFICATE-----
+#        MIICNjCCAdygAwIBAgIRALBAjQY2Wfpwz6/bqKvkeAowCgYIKoZIzj0EAwIwbDEL
+#        MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+#        cmFuY2lzY28xFDASBgNVBAoTC2V4YW1wbGUuY29tMRowGAYDVQQDExF0bHNjYS5l
+#        eGFtcGxlLmNvbTAeFw0xODAyMjUxMjQzMjlaFw0yODAyMjMxMjQzMjlaMGwxCzAJ
+#        BgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJh
+#        bmNpc2NvMRQwEgYDVQQKEwtleGFtcGxlLmNvbTEaMBgGA1UEAxMRdGxzY2EuZXhh
+#        bXBsZS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAR/LJmaZdt0jZMgTfsQ
+#        vLkJTCDG4m8lNdtQI5VoCpKKSxMlFKUPU54ofttW2Vn76hm7/eK+Lq09LRgJheo1
+#        6y47o18wXTAOBgNVHQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMB
+#        Af8EBTADAQH/MCkGA1UdDgQiBCDadvMVYJ3hG7FgDW7vlVW20s0L8mVUn/ggI2l0
+#        1ntSRTAKBggqhkjOPQQDAgNIADBFAiEAvX5+F+QnNPKX/Q/kFmkzOdRovEtgIylG
+#        EArBHBpaqpkCIDNzXoW//ROIslbKToWexg/kwAH1HMhkm9doTyaDxc4k
+#        -----END CERTIFICATE-----
+
+
+peers:
+  peer0.org1.example.com:
+    url: grpc://localhost:7051
+    eventUrl: grpc://localhost:7053
+    grpcOptions:
+      grpc.http2.keepalive_time: 15
+#      ssl-target-name-override: peer0.org1.example.com
+#      negotiationType: TLS
+#      sslProvider: openSSL
+#      hostnameOverride: peer0.org1.example.com
+#      # TODO: The following causes a NoSuchMethodException to be thrown when sending proposals to the peer...
+#      # grpc.NettyChannelBuilderOption.maxInboundMessageSize: 9000000
+#
+#    tlsCACerts:
+#      pem: |
+#          -----BEGIN CERTIFICATE-----
+#          MIICZjCCAg2gAwIBAgIQT5LDpIbEhZ93KRfuBzhsPDAKBggqhkjOPQQDAjB2MQsw
+#          CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+#          YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEfMB0GA1UEAxMWdGxz
+#          Y2Eub3JnMS5leGFtcGxlLmNvbTAeFw0xODAyMjUxMjQzMjlaFw0yODAyMjMxMjQz
+#          MjlaMFsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQH
+#          Ew1TYW4gRnJhbmNpc2NvMR8wHQYDVQQDExZwZWVyMC5vcmcxLmV4YW1wbGUuY29t
+#          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE+br01bZtM+KZswLnXiZK0f3bfSqt
+#          8+NnJc71NGx+VsUeU38jNl282Uo7A0PNKMQpr10BXomDl3jsTMK8E0aT16OBlzCB
+#          lDAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMC
+#          MAwGA1UdEwEB/wQCMAAwKwYDVR0jBCQwIoAgEkNmPHedLauZvdBejAlBvo4xhOWp
+#          2+VxGreyMCZtcicwKAYDVR0RBCEwH4IWcGVlcjAub3JnMS5leGFtcGxlLmNvbYIF
+#          cGVlcjAwCgYIKoZIzj0EAwIDRwAwRAIgdwC/WQ6wRHlTygTJJ8SiAoMrbDpTePhx
+#          Z2GEIu5RtMwCIBuJ8LTJnFZNivBbTFU/65lhCLpVj5R3j5KuaJ+dovF5
+#          -----END CERTIFICATE-----
+
+
+  peer1.org1.example.com:
+    url: grpc://localhost:7056
+    eventUrl: grpc://localhost:7058
+    grpcOptions:
+      grpc.http2.keepalive_time: 15
+#      ssl-target-name-override: peer0.org1.example.com
+#      negotiationType: TLS
+#      sslProvider: openSSL
+#      hostnameOverride: peer1.org1.example.com
+
+#    tlsCACerts:
+#      path: src/test/resources/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/server.crt
+
+
+  peer0.org2.example.com:
+    url: grpc://localhost:8051
+    eventUrl: grpc://localhost:8053
+#    grpcOptions:
+#      ssl-target-name-override: peer0.org2.example.com
+#      negotiationType: TLS
+#      grpc.NettyChannelBuilderOption.maxInboundMessageSize: 9000000
+#      sslProvider: openSSL
+#      hostnameOverride: peer0.org2.example.com
+#
+#    tlsCACerts:
+#      path: src/test/fixture/sdkintegration/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/server.crt
+
+  peer1.org2.example.com:
+    url: grpc://localhost:8056
+    eventUrl: grpc://localhost:8058
+
+
+#
+# Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows
+# certificate management to be done via REST APIs. Application may choose to use a standard
+# Certificate Authority instead of Fabric-CA, in which case this section would not be specified.
+#
+certificateAuthorities:
+  ca-org1:
+    url: http://localhost:7054
+    # the properties specified under this object are passed to the 'http' client verbatim when
+    # making the request to the Fabric-CA server
+#    httpOptions:
+#      verify: true
+
+    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+    # needed to enroll and invoke new users.
+    registrar: #single entitiy
+      enrollId: admin
+      enrollSecret: adminpw
+    # [Optional] The optional name of the CA.
+    caName: ca0
+  ca-org2:
+    url: http://localhost:8054
+      # the properties specified under this object are passed to the 'http' client verbatim when
+      # making the request to the Fabric-CA server
+    httpOptions:
+      verify: true
+    tlsCACerts:
+      path: peerOrganizations/org1.example.com/ca/org1.example.com-cert.pem
+
+    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+    # needed to enroll and invoke new users.
+    registrar: # as an array.
+      -  enrollId: admin
+         enrollSecret: adminpw
+      # [Optional] The optional name of the CA.
+            ## caName: ca0 no ca name!
+
