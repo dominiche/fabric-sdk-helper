@@ -79,7 +79,7 @@ organizations:
       - ca-org1
 
     adminPrivateKey:
-      path: src/test/resources/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/581fa072e48dc2a516f664df94ea687447c071f89fc0b783b147956a08929dcc_sk
+      path: src/test/resources/sdkintegration/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/581fa072e48dc2a516f664df94ea687447c071f89fc0b783b147956a08929dcc_sk
 #      pem: |
 #            -----BEGIN PRIVATE KEY-----
 #            MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgpANnM2zJ/oz7c31B
@@ -88,7 +88,7 @@ organizations:
 #            -----END PRIVATE KEY-----
 
     signedCert:
-      path: src/test/resources/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+      path: src/test/resources/sdkintegration/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
 
 
   Org2:
@@ -172,7 +172,7 @@ peers:
 #      hostnameOverride: peer1.org1.example.com
 
 #    tlsCACerts:
-#      path: src/test/resources/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/server.crt
+#      path: src/test/resources/sdkintegration/e2e-2Orgs/v1.1/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/server.crt
 
 
   peer0.org2.example.com:

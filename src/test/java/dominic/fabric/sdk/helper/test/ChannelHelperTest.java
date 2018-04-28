@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class ChannelHelperTest {
 
-    private String parentPath = "src/test/resources/";
+    private String parentPath = "src/test/resources/sdkintegration/";
 
     private boolean createFooChannel = true;
     private boolean install = true;
