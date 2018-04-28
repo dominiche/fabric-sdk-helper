@@ -102,7 +102,12 @@ public class ChannelHelperTest {
         log.info("======== queryInfoByChaincode: {}", JSON.toJSONString(queryInfosResultDTO.getModel()));
 
         log.info("============ blockInfo split ================");
+
         //blockInfo
+        BlockchainInfo blockchainInfo = fooChannel.queryBlockchainInfo();
+        byte[] currentBlockHash = blockchainInfo.getCurrentBlockHash();
+        BlockInfo blockInfo = fooChannel.queryBlockByHash(currentBlockHash);
+        log.info("blockNumber={}", blockInfo.getBlockNumber());
 
     }
 
