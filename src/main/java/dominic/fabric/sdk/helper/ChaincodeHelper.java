@@ -86,6 +86,31 @@ public class ChaincodeHelper {
         return sendTransaction(options, successful);
     }
 
+    public ResultDTO<BlockEvent.TransactionEvent> upgrade( UpgradeProposalRequest request) {
+        return upgrade(request, Channel.TransactionOptions.createTransactionOptions().orderers(channel.getOrderers()));
+    }
+    public ResultDTO<BlockEvent.TransactionEvent> upgrade(UpgradeProposalRequest request, Channel.TransactionOptions options) {
+        Preconditions.checkNotNull(request, "UpgradeProposalRequest不能为null");
+
+        Collection<ProposalResponse> successful = new LinkedList<>();
+        Collection<ProposalResponse> failed = new LinkedList<>();
+        Collection<ProposalResponse> responses;
+        log.debug("Sending upgrade proposal...");
+        try {
+            responses = channel.sendUpgradeProposal(request);
+        } catch (ProposalException | InvalidArgumentException e) {
+            String errorMessagePrefix = "upgrade chaincode fail when Sending upgrade proposal: ";
+            log.error(errorMessagePrefix, e);
+            return ResultDTO.failed(errorMessagePrefix + e.getMessage());
+        }
+
+        ResultDTO<BlockEvent.TransactionEvent> message = handleProposalResponse(successful, failed, responses);
+        if (message != null) return message;
+
+        log.debug("Sending upgradeTransaction to orderer...");
+        return sendTransaction(options, successful);
+    }
+
     private ResultDTO<BlockEvent.TransactionEvent> sendTransaction(Channel.TransactionOptions options, Collection<ProposalResponse> successful) {
         try {
             BlockEvent.TransactionEvent transactionEvent = channel.sendTransaction(successful, options).get(30, TimeUnit.SECONDS);//todo timeout可配置
@@ -135,11 +160,31 @@ public class ChaincodeHelper {
             return ResultDTO.failed(errorMessagePrefix + e.getMessage());
         }
 
+        ResultDTO<BlockEvent.TransactionEvent> checkResult = checkConsistency(responses);
+        if (checkResult != null) return checkResult;
+
         ResultDTO<BlockEvent.TransactionEvent> message = handleProposalResponse(successful, failed, responses);
         if (message != null) return message;
 
         log.debug("Sending chaincode transaction to orderer...");
         return sendTransaction(options, successful);
+    }
+
+    private ResultDTO<BlockEvent.TransactionEvent> checkConsistency(Collection<ProposalResponse> responses) {
+        // Check that all the proposals are consistent with each other. We should have only one set
+        // where all the proposals above are consistent.
+        Collection<Set<ProposalResponse>> proposalConsistencySets;
+        try {
+            proposalConsistencySets = SDKUtils.getProposalConsistencySets(responses);
+        } catch (InvalidArgumentException e) {
+            String errorMessagePrefix = "exception when checkConsistency: ";
+            log.error(errorMessagePrefix, e);
+            return ResultDTO.failed(errorMessagePrefix + e.getMessage());
+        }
+        if (proposalConsistencySets.size() != 1) {
+            return ResultDTO.failed(String.format("Expected only one set of consistent proposal responses but got %d", proposalConsistencySets.size()));
+        }
+        return null;
     }
 
     public ResultDTO<Collection<ProposalResponse>> queryByChaincode(QueryByChaincodeRequest request) {

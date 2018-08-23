@@ -33,20 +33,9 @@ public class ChannelHelper {
 
 
         List<Orderer> orderers = Lists.newArrayList();
-        List<Peer> peers = Lists.newArrayList();
-        List<EventHub> eventHubs = Lists.newArrayList();
-
-        //copy
         for (Orderer orderer : configFooChannel.getOrderers()) {
             orderers.add(client.newOrderer(orderer.getName(), orderer.getUrl(), orderer.getProperties()));
         }
-        for (Peer peer : configFooChannel.getPeers()) {
-            peers.add(client.newPeer(peer.getName(), peer.getUrl(), peer.getProperties()));
-        }
-        for (EventHub eventHub : configFooChannel.getEventHubs()) {
-            eventHubs.add(client.newEventHub(eventHub.getName(), eventHub.getUrl(), eventHub.getProperties()));
-        }
-
 
         Orderer anOrderer = orderers.iterator().next();
         orderers.remove(anOrderer);
@@ -58,12 +47,14 @@ public class ChannelHelper {
             newChannel.addOrderer(orderer);
         }
 
-        for (Peer peer : peers) {
-            newChannel.joinPeer(peer, Channel.PeerOptions.createPeerOptions()); //Default is all roles.
+        for (Peer peer : configFooChannel.getPeers()) {
+            Peer newPeer = client.newPeer(peer.getName(), peer.getUrl(), peer.getProperties());
+            newChannel.joinPeer(newPeer, configFooChannel.getPeersOptions(peer)); //Default is all roles.
         }
 
-        for (EventHub eventHub : eventHubs) {
-            newChannel.addEventHub(eventHub);
+        for (EventHub eventHub : configFooChannel.getEventHubs()) {
+            EventHub newEventHub = client.newEventHub(eventHub.getName(), eventHub.getUrl(), eventHub.getProperties());
+            newChannel.addEventHub(newEventHub);
         }
 
         newChannel.initialize();
